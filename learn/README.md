@@ -25,15 +25,14 @@
 - [x] train() 函数详解 (Q017) - Megatron Pipeline 训练循环
 - [x] Dynamic Sampling 详解 (Q018) - 动态采样与过滤机制
 - [x] train_async vs train.py (Q019) - 异步与同步训练对比
-- [ ] 项目概览
-- [ ] 架构设计
-- [ ] Reward 函数
-- [ ] 评估系统
-- [ ] 配置系统
+- [x] Data Packing 与 Loss 计算 (Q020) - per sample loss 机制
+- [x] Fully Async Rollout (Q021) - 完全异步 rollout 实现
+- [x] Off-Policy 处理 (Q022) - TIS 与重要性采样
+- [x] Multi-Agent 多模型设计 (Q023) - 不同角色不同 checkpoint
 
 ### 问题统计
 
-- 总问题数: 19
+- 总问题数: 23
 - 最后更新: 2026-04-14
 
 ### 问答索引
@@ -59,7 +58,10 @@
 | [Q017](questions/Q017-train-function-model-py.md) | train() 函数详解 | training, megatron, pipeline-parallelism |
 | [Q018](questions/Q018-dynamic-sampling.md) | Dynamic Sampling 详解 | rollout, dynamic-sampling, filter |
 | [Q019](questions/Q019-train-async-vs-sync.md) | train_async vs train.py | training, async, sync |
-| [Q018](questions/Q018-dynamic-sampling.md) | Dynamic Sampling 详解 | rollout, dynamic-sampling, filter |
+| [Q020](questions/Q020-data-packing-loss.md) | Data Packing 与 Loss 计算 | data-packing, loss, dynamic-batch-size |
+| [Q021](questions/Q021-fully-async-rollout.md) | Fully Async Rollout 详解 | fully-async, rollout, async |
+| [Q022](questions/Q022-off-policy-correction.md) | Off-Policy 问题处理 | off-policy, tis, importance-sampling |
+| [Q023](questions/Q023-multi-agent-multi-checkpoint.md) | Multi-Agent 多模型设计 | multi-agent, checkpoint, architecture |
 
 ## 目录结构
 
