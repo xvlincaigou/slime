@@ -23,6 +23,8 @@
 - [x] Actor 数据函数详解 (Q015) - _get_rollout_data, train_actor 等
 - [x] get_data_iterator 详解 (Q016) - 数据迭代器与动态 batch size
 - [x] train() 函数详解 (Q017) - Megatron Pipeline 训练循环
+- [x] Dynamic Sampling 详解 (Q018) - 动态采样与过滤机制
+- [x] train_async vs train.py (Q019) - 异步与同步训练对比
 - [ ] 项目概览
 - [ ] 架构设计
 - [ ] Reward 函数
@@ -31,8 +33,8 @@
 
 ### 问题统计
 
-- 总问题数: 17
-- 最后更新: 2026-04-13
+- 总问题数: 19
+- 最后更新: 2026-04-14
 
 ### 问答索引
 
@@ -55,6 +57,9 @@
 | [Q015](questions/Q015-actor-data-functions-detail.md) | Actor 数据函数详解 | data-processing, routing-replay, train_actor |
 | [Q016](questions/Q016-get-data-iterator.md) | get_data_iterator 详解 | data-loading, micro-batch, dynamic-batch-size |
 | [Q017](questions/Q017-train-function-model-py.md) | train() 函数详解 | training, megatron, pipeline-parallelism |
+| [Q018](questions/Q018-dynamic-sampling.md) | Dynamic Sampling 详解 | rollout, dynamic-sampling, filter |
+| [Q019](questions/Q019-train-async-vs-sync.md) | train_async vs train.py | training, async, sync |
+| [Q018](questions/Q018-dynamic-sampling.md) | Dynamic Sampling 详解 | rollout, dynamic-sampling, filter |
 
 ## 目录结构
 
