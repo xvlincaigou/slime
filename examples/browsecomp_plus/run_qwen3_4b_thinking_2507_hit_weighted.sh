@@ -11,7 +11,7 @@ set -ex
 export PYTHONBUFFERED=16
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-source "${SCRIPT_DIR}/../../scripts/models/qwen3-4B.sh"
+source "${SCRIPT_DIR}/../../scripts/models/qwen3-4B-Instruct-2507.sh"
 
 export BROWSECOMP_PLUS_ROOT="${BROWSECOMP_PLUS_ROOT:-/root/browsecomp-plus}"
 export BROWSECOMP_PLUS_DATA_DIR="${BROWSECOMP_PLUS_DATA_DIR:-/root/browsecomp-plus-processed}"
@@ -32,16 +32,16 @@ ROLLOUT_ARGS=(
    --metadata-key metadata
    --tool-key tools
    --rollout-shuffle
-   --num-rollout 3000
+   --num-rollout 25
    --rollout-batch-size 32
    --n-samples-per-prompt 8
-   --rollout-max-response-len 4096
-   --rollout-temperature 1
-   --eval-interval 25
+   --rollout-max-response-len 2048
+   --rollout-temperature 0.7
+   --eval-interval 5
    --eval-prompt-data browsecomp_plus_eval "${BROWSECOMP_PLUS_DATA_DIR}/eval.parquet"
    --eval-input-key prompt
    --eval-label-key reward_model
-    --eval-tool-key tools
+   --eval-tool-key tools
    --n-samples-per-eval-prompt 1
    --global-batch-size 256
    --balance-data
