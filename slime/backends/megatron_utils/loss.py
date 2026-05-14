@@ -731,6 +731,7 @@ def policy_loss_function(
             "loss_masks": batch["loss_masks"],
             "total_lengths": total_lengths,
             "response_lengths": response_lengths,
+            "metadata": batch.get("metadata"),
         }
 
         if args.custom_tis_function_path is not None:

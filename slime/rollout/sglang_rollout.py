@@ -92,7 +92,7 @@ class GenerateState(metaclass=SingletonMeta):
         self.pendings = set()
         self.aborted = False
 
-    def submit_generate_tasks(self, samples: list[list[Sample]]) -> None:
+    def submit_generate_tasks(self, samples: list[list[Sample]], rollout_id: int | None = None) -> None:
         for group in samples:
             self.pendings.add(
                 asyncio.create_task(
@@ -101,6 +101,7 @@ class GenerateState(metaclass=SingletonMeta):
                         self.args,
                         group,
                         sampling_params=self.sampling_params.copy(),
+                        rollout_id=rollout_id,
                         evaluation=False,
                     )
                 )
@@ -219,6 +220,7 @@ async def generate_and_rm(
     args: Namespace,
     sample: Sample | list[Sample],
     sampling_params: dict[str, Any],
+    rollout_id: int | None = None,
     evaluation: bool = False,
 ) -> Sample | list[Sample]:
     # mask previous off-policy generation for partial rollout
@@ -266,7 +268,7 @@ async def generate_and_rm(
         # for multi agent system, the reward of some sample is calculated during generation.
         samples_need_reward = [sample for sample in samples if sample.reward is None]
         with trace_span(samples_need_reward, "reward_model"):
-            rewards = await batched_async_rm(args, samples_need_reward)
+            rewards = await batched_async_rm(args, samples_need_reward, rollout_id=rollout_id, evaluation=evaluation)
         for sample, reward in zip(samples_need_reward, rewards, strict=False):
             sample.reward = reward
         return samples
@@ -276,7 +278,7 @@ async def generate_and_rm(
         # for multi-turn environment, a reward could be assigned to the agent.
         if sample.reward is None:
             with trace_span(sample, "reward_model"):
-                sample.reward = await async_rm(args, sample)
+                sample.reward = await async_rm(args, sample, rollout_id=rollout_id, evaluation=evaluation)
 
     return sample
 
@@ -287,7 +289,11 @@ async def generate_and_rm(
     attrs_getter=lambda args, group, sampling_params, evaluation=False: {"group_size": len(group)},
 )
 async def generate_and_rm_group(
-    args: Namespace, group: list[Sample], sampling_params: dict[str, Any], evaluation: bool = False
+    args: Namespace,
+    group: list[Sample],
+    sampling_params: dict[str, Any],
+    rollout_id: int | None = None,
+    evaluation: bool = False,
 ) -> list[Sample]:
     state = GenerateState(args)
 
@@ -306,7 +312,9 @@ async def generate_and_rm_group(
             seed = state.group_sampling_seeds[idx]
             current_sampling_params["sampling_seed"] = seed
         tasks.append(
-            asyncio.create_task(generate_and_rm(args, sample, current_sampling_params, evaluation=evaluation))
+            asyncio.create_task(
+                generate_and_rm(args, sample, current_sampling_params, rollout_id=rollout_id, evaluation=evaluation)
+            )
         )
 
     group = await asyncio.gather(*tasks)
@@ -314,7 +322,7 @@ async def generate_and_rm_group(
     # for the rm that need the whole group, we will do the rm here
     if not state.aborted and args.group_rm:
         with trace_span(group, "group_reward_model"):
-            rewards = await batched_async_rm(args, group)
+            rewards = await batched_async_rm(args, group, rollout_id=rollout_id, evaluation=evaluation)
         for sample, reward in zip(group, rewards, strict=False):
             sample.reward = reward
 
@@ -402,7 +410,7 @@ async def generate_rollout_async(
         while state.remaining_batch_size < target_data_size:
             # get samples from the buffer and submit the generation requests.
             samples = data_source(args.over_sampling_batch_size)
-            state.submit_generate_tasks(samples)
+            state.submit_generate_tasks(samples, rollout_id=rollout_id)
 
         # wait for the generation to finish
         done, state.pendings = await asyncio.wait(state.pendings, return_when=asyncio.FIRST_COMPLETED)
@@ -541,6 +549,7 @@ async def eval_rollout_single_dataset(
                         args,
                         sample,
                         sampling_params=sampling_params,
+                        rollout_id=rollout_id,
                         evaluation=True,
                     )
                 )
